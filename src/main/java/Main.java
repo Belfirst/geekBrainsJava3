@@ -1,4 +1,5 @@
 
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
@@ -7,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         CyclicBarrier cb = new CyclicBarrier(CARS_COUNT);
-        final CountDownLatch cdl1 = new CountDownLatch(CARS_COUNT);
+        final CountDownLatch cdl1 = new CountDownLatch(CARS_COUNT + 1);
         final CountDownLatch cdl2 = new CountDownLatch(CARS_COUNT);
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
         Race race = new Race(new Road(60), new Tunnel(CARS_COUNT), new Road(40));
@@ -21,9 +22,10 @@ public class Main {
         try {
             cdl1.await();
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
+            cb.await();
             cdl2.await();
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
     }
