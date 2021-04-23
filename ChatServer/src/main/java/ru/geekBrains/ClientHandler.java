@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
 
@@ -20,6 +22,7 @@ public class ClientHandler {
     private DataInputStream inputStream;
     private ChatServer chatServer;
     private String currentUserName;
+    private ExecutorService es = Executors.newSingleThreadExecutor();
 
     public ClientHandler(Socket socket, ChatServer chatServer) {
         try {
@@ -29,11 +32,11 @@ public class ClientHandler {
             this.outputStream = new DataOutputStream(socket.getOutputStream());
             System.out.println("CH created!");
 
-            new Thread(() -> {
+            es.execute(() -> {
                 if(authenticate())
                     readMessages();
-            }).start();
-
+            });
+            es.shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,6 +109,7 @@ public class ClientHandler {
                 } else {
                     response.setMessageType(MessageType.AUTH_CONFIRM);
                     response.setBody(username);
+                    response.setLogin(dto.getLogin());
                     currentUserName = username;
                     chatServer.subscribe(this);
                     System.out.println("Subscribed");
