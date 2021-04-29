@@ -39,7 +39,7 @@ public class ChatApp  extends JFrame implements MessageProcessor {
     private MessageService messageService;
     private final History history = new History();
 
-    private int port = 8181;
+    private int port = 8189;
     private String ip = "localhost";
 
     private final JList<String> userList = new JList<>();
@@ -155,7 +155,7 @@ public class ChatApp  extends JFrame implements MessageProcessor {
 
     private void showHistory(String login){
         String msg = history.readFromFile(login);
-        chat.append(msg);
+        chat.append(msg + "\n");
     }
 
     public void sendAuth() {
